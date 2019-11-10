@@ -9,7 +9,6 @@ class Landscape {
         this.ele.width = width;
         this.ele.height = height;
         this.ele.style.backgroundColor = background;
-        //this.ele. style.backgroundlmage ='url(timgjpg);
         this.canvas = el.getContext("2d")
         this.elements = []
         this.flower = {}
@@ -21,6 +20,7 @@ class Landscape {
         this.initGlass()
         this.initBackdrop()
     }
+    // 渐变天空色展示画面
     initBackdrop() {
         let b_grad = this.canvas.createLinearGradient(0, 0, 0, this.ele.height); //创建一个 渐变色线性对象
         b_grad.addColorStop(0, "#2a5caa");
@@ -53,11 +53,11 @@ class Landscape {
             })
         }
     }
+    //添加背景图像方式展示画面
     setBglmage(image) {
         let img = new Image();
         img.src = image
         img.onload = () => {
-            //this.canvas.drawlmage(img, 0, 0,this.ele.width, this.ele.height);
             this.initFlowerDraw()
             this.tree({
                 x: this.ele.width / 2,
@@ -78,6 +78,7 @@ class Landscape {
             })
         }
     }
+    //月亮
     moon() {
         this.canvas.save();
         this.canvas.beginPath();
@@ -98,6 +99,7 @@ class Landscape {
     }
     //树
     tree(param) {
+        let that = this
         //this.canvas.globalCompositeOperation ="source-over";
         let tree = {
             branchs: [],
@@ -106,15 +108,11 @@ class Landscape {
             radius: param.radius,
             grap: 1
         }
-        //随机整数
-        tree.getBranchIncRandom = this.incRandom
-        //随机浮点数
-        tree.getBranchFloatRandom = this.floatRandom
         //创建数据结构
         tree.setBranchStructure = function (branch, params) {
             tree.grap++
             if (!branch.length) {
-                let pieces = tree.getBranchIncRandom(2, 2)
+                let pieces = that.incRandom(2, 2)
                 for (let i = 0; i < pieces; i++) {
                     branch.push({
                         radius: params.radius,
@@ -122,8 +120,8 @@ class Landscape {
                         x: params.x,
                         y: params.y,
                         inc: {
-                            x: tree.getBranchFloatRandom(-1.5, 1.5),
-                            y: tree.getBranchFloatRandom(3.5, 5),
+                            x: that.floatRandom(-1.5, 1.5),
+                            y: that.floatRandom(3.5, 5),
                         },
                         branchs: []
                     })
@@ -131,7 +129,7 @@ class Landscape {
             }
             for (let i = 0; i < branch.length; i++) {
 
-                let circulation = tree.getBranchIncRandom(50, 20)
+                let circulation = that.incRandom(50, 20)
                 for (let j = 0; j < circulation; j++) {
                     if (branch[i].radius < 0.8) {
                         branch[i].isEnd = true
@@ -146,14 +144,14 @@ class Landscape {
                         radius: branch[i].radius
                     }
                     let reg = 0.18 - (0.1 / tree.grap);
-                    let angle = tree.getBranchFloatRandom(-reg, reg)
+                    let angle = that.floatRandom(-reg, reg)
                     branch[i].inc.x = Math.cos(angle) * branch[i].inc.x - Math.sin(angle) * branch[i].inc.y;
                     branch[i].inc.y = Math.sin(angle) * branch[i].inc.x + Math.cos(angle) * branch[i].inc.y;
                     branch[i].pointArr.push(p)
                 }
                 if (branch[i].radius > 0.8) {
                     branch[i].branchs = []
-                    let pieces = tree.getBranchIncRandom(1, 2)
+                    let pieces = that.incRandom(1, 2)
                     for (let j = 0; j < pieces; j++) {
                         branch[i].branchs.push({
                             radius: branch[i].radius,
@@ -176,7 +174,6 @@ class Landscape {
                 }
             }
         }
-        let that = this
         tree.draw = function (branch) {
             for (let i = 0; i < branch.length; i++) {
                 let points = branch[i].pointArr
@@ -184,18 +181,12 @@ class Landscape {
                     that.canvas.save();
                     that.canvas.beginPath();
                     that.canvas.arc(points[j].x, points[j].y, points[j].radius, 0, 2 * Math.PI);
-                    //this.canvas.rotate(tree.pointArr[i].rotate)
                     that.canvas.globalAlpha = 0.3
                     that.canvas.fillStyle = '#53261f'
                     that.canvas.fill();
                     that.canvas.restore();
                 }
                 if (branch[i].isEnd) {
-                    // that.flower({
-                    // x: points[points.length- 1].x,
-                    // y: points[points.length- 1].y, 
-                    // radius: 5
-                    // })
                     let d_pearch = new that.flower.pearch({
                         x: points[points.length - 1].x,
                         y: points[points.length - 1].y,
@@ -213,8 +204,10 @@ class Landscape {
         tree.setBranchStructure(tree.branchs, t_params)
         tree.draw(tree.branchs)
     }
+    //绘制花朵
     initFlowerDraw() {
         let that = this
+        //绘制桃花
         that.flower.pearch = function (params) {
             this.params = {
                 x: params.x,
@@ -339,6 +332,7 @@ class Landscape {
             this.setStructure()
             this.draw()
         }
+        //绘制邹菊
         that.flower.daisy = function (params) {
             this.params = {
                 x: params.x,
